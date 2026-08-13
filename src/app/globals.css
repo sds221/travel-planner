@@ -3,97 +3,119 @@
 @tailwind utilities;
 
 /**
- * 暖色调深色主题。
+ * shadcn/ui 默认主题(zinc 中性色阶)。
  *
- * 底色不用中性灰,而是带一点红棕的暖黑(#17120f 系)。旅行产品的气质
- * 偏"日落/土墙/木头",冷蓝会显得像监控面板。
- *
- * 主色用琥珀橙 #e8873c —— 在暖底上够跳,又不像纯橙那样刺眼。
- * 辅助色用陶土红,只在强调处出现。
+ * 变量命名和取值沿用 shadcn 的约定,这样以后从官网复制组件代码可以直接用,
+ * 不需要改类名。HSL 分量不带括号是故意的 —— Tailwind 里要写成
+ * `hsl(var(--background))`,加了括号就没法插值。
  */
-:root {
-  /* 层次:bg 最深,panel 抬一层,raised 再抬一层 */
-  --bg: #17120f;
-  --panel: #211a15;
-  --raised: #2b221b;
-  --border: #3a2e25;
-  --border-strong: #4a3a2d;
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 240 5.9% 10%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 240 5.9% 10%;
+    --radius: 0.5rem;
+  }
 
-  --text: #f5ece3;
-  --muted: #b09a86;
-  --faint: #7d6b5c;
-
-  --accent: #e8873c;
-  --accent-hover: #f19952;
-  --accent-soft: rgba(232, 135, 60, 0.14);
-  --accent-ring: rgba(232, 135, 60, 0.35);
-
-  --terra: #c8613f;
-  --success: #7fa650;
-  --warn: #d9a13b;
-  --danger: #c9553f;
+  .dark {
+    --background: 240 10% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 240 10% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 240 10% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 240 5.9% 10%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 3.7% 15.9%;
+    --input: 240 3.7% 15.9%;
+    --ring: 240 4.9% 83.9%;
+  }
 }
 
-html,
-body {
-  background: var(--bg);
-  color: var(--text);
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family:
+      -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei',
+      system-ui, sans-serif;
+  }
 }
 
-body {
-  font-family:
-    -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei',
-    system-ui, sans-serif;
-  /* 顶部一层极淡的暖光,避免大面积纯色显得平 */
-  background-image: radial-gradient(1200px 500px at 50% -200px, rgba(232, 135, 60, 0.07), transparent);
-  background-repeat: no-repeat;
-}
-
+/**
+ * 旧的语义类。
+ *
+ * 项目里有 149 处 `.panel` / `.input` / `.chip` 之类的用法,不逐个替换,而是
+ * 让它们改用 shadcn 的 token —— 视觉上直接变成 shadcn 极简风,类名不用动。
+ * 新代码请直接用 @/components/ui 里的组件。
+ */
 @layer components {
   .panel {
-    @apply rounded-2xl border border-[var(--border)] bg-[var(--panel)];
+    @apply rounded-lg border bg-card text-card-foreground shadow-sm;
   }
 
   .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-medium
-      transition-all duration-150 disabled:cursor-not-allowed disabled:opacity-45;
+    @apply inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm
+      font-medium ring-offset-background transition-colors focus-visible:outline-none
+      focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2
+      disabled:pointer-events-none disabled:opacity-50;
   }
 
   .btn-primary {
-    @apply btn bg-[var(--accent)] text-[#231508] shadow-[0_1px_0_rgba(255,255,255,0.18)_inset]
-      hover:bg-[var(--accent-hover)] active:translate-y-px;
+    @apply btn h-9 bg-primary px-4 py-2 text-primary-foreground hover:bg-primary/90;
   }
 
   .btn-ghost {
-    @apply btn border border-[var(--border)] text-[var(--text)]
-      hover:border-[var(--border-strong)] hover:bg-white/[0.04] active:translate-y-px;
+    @apply btn h-9 border border-input bg-background px-4 py-2 hover:bg-accent
+      hover:text-accent-foreground;
   }
 
   .input {
-    @apply w-full rounded-xl border border-[var(--border)] bg-[#1b1512] px-3 py-2 text-sm
-      text-[var(--text)] transition-colors placeholder:text-[var(--faint)]
-      focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-ring)];
+    @apply flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm
+      shadow-sm transition-colors placeholder:text-muted-foreground
+      focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring
+      disabled:cursor-not-allowed disabled:opacity-50;
   }
 
   .label {
-    @apply mb-1.5 block text-xs font-medium tracking-wide text-[var(--muted)];
+    @apply mb-1.5 block text-sm font-medium leading-none;
   }
 
   .chip {
-    @apply inline-flex items-center gap-1 rounded-full border border-[var(--border)]
-      px-2.5 py-0.5 text-xs text-[var(--muted)];
+    @apply inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-xs font-medium
+      text-muted-foreground transition-colors;
   }
 
-  /* 选中态的 chip:暖色描边 + 淡填充,比纯反白柔和 */
   .chip-active {
-    @apply border-[var(--accent)] bg-[var(--accent-soft)] text-[var(--accent)];
+    @apply border-transparent bg-primary text-primary-foreground;
   }
-}
-
-/* 日期选择器在深色下默认是白底,反色让它跟着主题 */
-input[type='date']::-webkit-calendar-picker-indicator {
-  filter: invert(0.75) sepia(0.4) saturate(2) hue-rotate(340deg);
-  cursor: pointer;
 }
 
 /* 高德地图容器里的 logo/版权按 API 许可要求保留，只压一下视觉重量 */

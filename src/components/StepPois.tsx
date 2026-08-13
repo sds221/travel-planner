@@ -123,7 +123,7 @@ export function StepPois() {
         <header className="mb-3 flex items-center justify-between">
           <h3 className="text-sm font-semibold">
             已选景点
-            <span className="ml-2 text-xs font-normal text-[var(--muted)]">
+            <span className="ml-2 text-xs font-normal text-muted-foreground">
               {pois.length} 个 · 共 {detail.days} 天
             </span>
           </h3>
@@ -141,14 +141,14 @@ export function StepPois() {
             {pois.map((tp) => (
               <li
                 key={tp.poiId}
-                className="flex items-start justify-between gap-3 rounded-lg border border-[var(--border)] px-3 py-2"
+                className="flex items-start justify-between gap-3 rounded-lg border border-border px-3 py-2"
               >
                 <div className="min-w-0">
                   <p className="truncate text-sm">
                     {tp.poi.name}
                     {tp.addedBy === 'user' && <span className="chip ml-2">自定义</span>}
                   </p>
-                  <p className="mt-0.5 text-xs text-[var(--muted)]">
+                  <p className="mt-0.5 text-xs text-muted-foreground">
                     {tp.poi.district ?? trip.city} · 建议游览{' '}
                     {duration(tp.dwellMinutesOverride ?? tp.poi.dwellMinutes)}
                     {tp.poi.rating ? ` · ${tp.poi.rating} 分` : ''}
@@ -156,7 +156,7 @@ export function StepPois() {
                 </div>
                 <button
                   onClick={() => remove(tp.poiId)}
-                  className="shrink-0 rounded p-1 text-[var(--muted)] hover:bg-white/5 hover:text-red-400"
+                  className="shrink-0 rounded p-1 text-muted-foreground hover:bg-white/5 hover:text-red-400"
                   aria-label={`移除 ${tp.poi.name}`}
                 >
                   <X className="h-4 w-4" />
@@ -170,7 +170,7 @@ export function StepPois() {
       {/* ── 入口一：agent 推荐 ── */}
       <section className="panel space-y-3 p-4">
         <h3 className="flex items-center gap-2 text-sm font-semibold">
-          <Sparkles className="h-4 w-4 text-[var(--accent)]" />
+          <Sparkles className="h-4 w-4 text-foreground" />
           让 AI 推荐
         </h3>
         <textarea
@@ -213,10 +213,10 @@ export function StepPois() {
                           disabled={r.alreadySelected}
                           className={`w-full rounded-lg border px-3 py-2 text-left transition-colors ${
                             r.alreadySelected
-                              ? 'border-[var(--border)] opacity-50'
+                              ? 'border-border opacity-50'
                               : on
-                                ? 'border-[var(--accent)] bg-[var(--accent)]/10'
-                                : 'border-[var(--border)] hover:bg-white/5'
+                                ? 'border-foreground bg-primary/10'
+                                : 'border-border hover:bg-white/5'
                           }`}
                         >
                           <div className="flex items-start justify-between gap-2">
@@ -225,13 +225,13 @@ export function StepPois() {
                               {r.alreadySelected && <span className="chip ml-2">已在列表</span>}
                             </p>
                             {on && !r.alreadySelected && (
-                              <Check className="mt-0.5 h-4 w-4 shrink-0 text-[var(--accent)]" />
+                              <Check className="mt-0.5 h-4 w-4 shrink-0 text-foreground" />
                             )}
                           </div>
-                          <p className="mt-1 text-xs leading-relaxed text-[var(--muted)]">
+                          <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
                             {r.reason}
                           </p>
-                          <p className="mt-1 text-xs text-[var(--muted)]">
+                          <p className="mt-1 text-xs text-muted-foreground">
                             建议游览 {duration(r.suggestedDwellMinutes)}
                             {r.district ? ` · ${r.district}` : ''}
                             {r.rating ? ` · ${r.rating} 分` : ''}
@@ -282,12 +282,12 @@ export function StepPois() {
             <Upload className="h-4 w-4" />
             批量导入我的清单
           </h3>
-          <span className="text-xs text-[var(--muted)]">{showImport ? '收起' : '展开'}</span>
+          <span className="text-xs text-muted-foreground">{showImport ? '收起' : '展开'}</span>
         </button>
 
         {showImport && (
           <>
-            <p className="text-xs text-[var(--muted)]">
+            <p className="text-xs text-muted-foreground">
               把想去的地方粘进来，一行一个（也支持逗号、顿号分隔）。系统会逐个定位，
               然后你可以直接跳到第三步生成最优路线。
             </p>
@@ -310,7 +310,7 @@ export function StepPois() {
 
             {importResult && (
               <div className="space-y-2 text-xs">
-                <p className="text-[var(--muted)]">
+                <p className="text-muted-foreground">
                   成功导入 {importResult.imported} 个
                   {importResult.skipped.length > 0 &&
                     `，跳过 ${importResult.skipped.length} 个已存在的`}

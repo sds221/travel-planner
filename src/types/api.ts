@@ -18,6 +18,7 @@
 import type {
   Trip,
   TripDetail,
+  Poi,
   TripPoi,
   PoiRecommendation,
   HotelRecommendation,
@@ -115,10 +116,16 @@ export type AddPoisBody =
 /**
  * custom 模式下如果搜到多个同名地点,除了加进去的那个,还会把其它候选
  * 一起返回,让用户确认是不是加错了。
+ *
+ * 注意 `added` 是 Poi(刚落库的地点本身),不是 TripPoi(行程与地点的关联)
+ * —— 这一步只保证地点入库了,关联信息前端靠 refresh() 重新拉。
+ *
+ * TODO: otherCandidates 目前后端在发、前端没读 —— "选错了可以改"这个交互
+ * 还没做。要么把它做出来,要么后端别再算这段。
  */
 export interface AddCustomPoiAmbiguous {
-  added: TripPoi
-  otherCandidates: { name: string; address: string | null }[]
+  added: Poi
+  otherCandidates: { name: string; address: string | null; district: string | null }[]
 }
 
 export type AddPoisData = TripPoi[]
@@ -201,6 +208,18 @@ export interface GeneratePlanData {
 }
 
 // ── agent 轨迹 ─────────────────────────────────────────────────────
+
+/**
+ * GET /api/trips/:id/plan
+ *
+ * TODO: 前端没有调用方 —— 同样的数据已经在 `GET /api/trips/:id` 里返回了。
+ * 保留是因为它对调试有用(单独看算法输出),但如果确认不需要就该删掉,
+ * 少一个要维护的端点。
+ */
+export interface GetPlanData {
+  trip: Trip
+  itinerary: ItineraryDay[]
+}
 
 /** GET /api/trips/:id/runs */
 export type GetRunsData = AgentRun[]

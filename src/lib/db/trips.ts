@@ -292,6 +292,16 @@ export async function replaceItinerary(
   })
 }
 
+/**
+ * 从库里读出来的一天。
+ *
+ * 注意 items 不能写成 `ItemInput & {...}` —— `ItemInput` 是**写入**用的类型,
+ * 那些 `poiId?` 的可选是为了让调用方少写几个 null。读出来的行每一列都在,
+ * 是 `string | null` 而不是 `undefined`。
+ * 混用这两者会让 JSON 契约对不上:`undefined` 的键会被 JSON.stringify 整个
+ * 省掉,前端读到 undefined;而契约(@/types/api → ItineraryItem)声明的是 null。
+ * 所以这里显式列出读取形状,与前端契约保持一致。
+ */
 export interface ItineraryDay {
   dayIndex: number
   date: string | null
@@ -299,7 +309,20 @@ export interface ItineraryDay {
   tip: string | null
   distanceMeters: number | null
   travelMinutes: number | null
-  items: (ItemInput & { id: string; poi: PoiRow | null })[]
+  items: {
+    id: string
+    seq: number
+    kind: (typeof schema.itemKindEnum.enumValues)[number]
+    poiId: string | null
+    arriveAt: string | null
+    departAt: string | null
+    legMode: TravelMode | null
+    legDistanceMeters: number | null
+    legMinutes: number | null
+    legPolyline: [number, number][] | null
+    note: string | null
+    poi: PoiRow | null
+  }[]
 }
 
 export async function getItinerary(tripId: string): Promise<ItineraryDay[]> {

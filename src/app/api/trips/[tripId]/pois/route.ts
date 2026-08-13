@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { ok, fail, failFromError, parseBody } from '@/lib/api'
+import { okAs, fail, failFromError, parseBody } from '@/lib/api'
 import {
   getTrip,
   listTripPois,
@@ -10,12 +10,13 @@ import {
 } from '@/lib/db/trips'
 import { getPoisByIds, upsertUserPoi, upsertPois } from '@/lib/db/queries'
 import { getMapProvider } from '@/lib/providers'
+import type { AddPoisData, AddCustomPoiAmbiguous } from '@/types/api'
 
 /** 第一步的产出：已选景点列表 */
 export async function GET(_req: Request, { params }: { params: Promise<{ tripId: string }> }) {
   const { tripId } = await params
   try {
-    return ok(await listTripPois(tripId))
+    return okAs<AddPoisData>(await listTripPois(tripId))
   } catch (err) {
     return failFromError(err)
   }
@@ -97,7 +98,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ tripId:
       await advanceToHotelStep(trip.status, tripId)
 
       // 多个候选时把其余的回给前端，让用户确认选错了可以改
-      return ok({
+      return okAs<AddCustomPoiAmbiguous>({
         added: saved,
         otherCandidates: candidates.slice(1, 4).map((c) => ({
           name: c.name,
@@ -108,7 +109,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ tripId:
     }
 
     await advanceToHotelStep(trip.status, tripId)
-    return ok(await listTripPois(tripId))
+    return okAs<AddPoisData>(await listTripPois(tripId))
   } catch (err) {
     return failFromError(err)
   }
@@ -129,7 +130,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ tripId
   try {
     const { poiId, ...patch } = body.data
     await updateTripPoi(tripId, poiId, patch)
-    return ok(await listTripPois(tripId))
+    return okAs<AddPoisData>(await listTripPois(tripId))
   } catch (err) {
     return failFromError(err)
   }
@@ -141,7 +142,7 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ tripI
   if (!poiId) return fail('缺少 poiId')
   try {
     await removeTripPoi(tripId, poiId)
-    return ok(await listTripPois(tripId))
+    return okAs<AddPoisData>(await listTripPois(tripId))
   } catch (err) {
     return failFromError(err)
   }

@@ -28,7 +28,7 @@ export default function TripPage({ params }: { params: Promise<{ tripId: string 
   if (loading && !detail) {
     return (
       <main className="flex min-h-screen items-center justify-center">
-        <Spinner className="text-[var(--muted)]" />
+        <Spinner className="text-muted-foreground" />
       </main>
     )
   }
@@ -42,7 +42,7 @@ export default function TripPage({ params }: { params: Promise<{ tripId: string 
         ) : (
           <ErrorBox message={error} onRetry={() => load(tripId)} />
         )}
-        <Link href="/" className="mt-4 inline-block text-xs text-[var(--accent)] underline">
+        <Link href="/" className="mt-4 inline-block text-xs text-foreground underline">
           返回首页
         </Link>
       </main>
@@ -57,7 +57,7 @@ export default function TripPage({ params }: { params: Promise<{ tripId: string 
       <header className="mb-6">
         <Link
           href="/"
-          className="mb-3 inline-flex items-center gap-1 text-xs text-[var(--muted)] hover:text-[var(--text)]"
+          className="mb-3 inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
         >
           <ChevronLeft className="h-3.5 w-3.5" />
           全部行程
@@ -67,7 +67,7 @@ export default function TripPage({ params }: { params: Promise<{ tripId: string 
           <span className="chip">{trip.city}</span>
           <span className="chip">{STATUS_LABEL[trip.status] ?? trip.status}</span>
         </div>
-        <p className="mt-1 text-xs text-[var(--muted)]">
+        <p className="mt-1 text-xs text-muted-foreground">
           {trip.startDate ? `${trip.startDate} 起 · ` : ''}
           {detail.days} 天 · {trip.partySize} 人 · 已选 {pois.length} 个景点
         </p>
@@ -87,29 +87,29 @@ export default function TripPage({ params }: { params: Promise<{ tripId: string 
               onClick={() => setStep(i)}
               className={`group relative overflow-hidden rounded-xl border px-3.5 py-2.5 text-left transition-all ${
                 active
-                  ? 'border-[var(--accent)] bg-[var(--accent-soft)]'
-                  : 'border-[var(--border)] hover:border-[var(--border-strong)] hover:bg-[var(--raised)]'
+                  ? 'border-foreground bg-secondary'
+                  : 'border-border hover:border-input hover:bg-secondary'
               } ${!usable && !active ? 'opacity-45' : ''}`}
             >
               <div className="flex items-center gap-1.5">
                 <span
                   className={`flex h-4 w-4 items-center justify-center rounded-full text-[10px] font-medium ${
                     active
-                      ? 'bg-[var(--accent)] text-[#231508]'
+                      ? 'bg-primary text-primary-foreground'
                       : done
-                        ? 'bg-[var(--success)]/25 text-[var(--success)]'
-                        : 'bg-[var(--raised)] text-[var(--faint)]'
+                        ? 'bg-secondary text-foreground'
+                        : 'bg-secondary text-muted-foreground'
                   }`}
                 >
                   {done ? '✓' : i + 1}
                 </span>
                 <p
-                  className={`text-sm font-medium ${active ? 'text-[var(--accent)]' : ''}`}
+                  className={`text-sm font-medium ${active ? 'text-foreground' : ''}`}
                 >
                   {s.label}
                 </p>
               </div>
-              <p className="mt-1 hidden text-[11px] leading-snug text-[var(--muted)] sm:block">
+              <p className="mt-1 hidden text-[11px] leading-snug text-muted-foreground sm:block">
                 {s.hint}
               </p>
             </button>

@@ -1,5 +1,6 @@
 import { z } from 'zod'
-import { ok, fail, failFromError, parseBody } from '@/lib/api'
+import { okAs, fail, failFromError, parseBody } from '@/lib/api'
+import type { RecommendPoisData } from '@/types/api'
 import { getTrip, listTripPois, tripDayCount } from '@/lib/db/trips'
 import { recommendPois } from '@/lib/agent/tasks/recommend-pois'
 import { getPoisByIds } from '@/lib/db/queries'
@@ -45,7 +46,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ tripId:
     const valid = result.output.recommendations.filter((r) => realIds.has(r.poiId))
     const hallucinated = result.output.recommendations.length - valid.length
 
-    return ok({
+    return okAs<RecommendPoisData>({
       runId: result.runId,
       summary: result.output.summary,
       unresolved: result.output.unresolved,

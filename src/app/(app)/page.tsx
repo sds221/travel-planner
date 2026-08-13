@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation'
 import { Plus, MapPin, ChevronRight } from 'lucide-react'
 import { api, ApiError } from '@/lib/client'
 import { ErrorBox, SetupHint, Spinner, Empty } from '@/components/ui'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 import { STATUS_LABEL } from '@/lib/utils'
 import type { Trip } from '@/types'
 
@@ -67,22 +69,17 @@ export default function HomePage() {
   return (
     <main className="mx-auto max-w-3xl px-4 pb-16 pt-12">
       <header className="mb-9">
-        <h1 className="text-[2.1rem] font-semibold leading-tight tracking-tight">
-          去哪儿,
-          <span className="bg-gradient-to-r from-[var(--accent)] to-[var(--terra)] bg-clip-text text-transparent">
-            怎么走
-          </span>
-        </h1>
-        <p className="mt-2.5 max-w-lg text-sm leading-relaxed text-[var(--muted)]">
+        <h1 className="text-3xl font-semibold tracking-tight">去哪儿，怎么走</h1>
+        <p className="mt-2.5 max-w-lg text-sm leading-relaxed text-muted-foreground">
           选景点 → 选酒店 → 生成最优路线。顺序和时刻由算法算,AI 负责挑选和解释。
         </p>
-        <div className="mt-4 flex flex-wrap gap-x-4 gap-y-1.5 text-xs text-[var(--faint)]">
+        <div className="mt-4 flex flex-wrap gap-x-4 gap-y-1.5 text-xs text-muted-foreground">
           <span>地理聚类分天</span>
-          <span className="text-[var(--border-strong)]">·</span>
+          <span className="text-muted-foreground/40">·</span>
           <span>2-opt 定序</span>
-          <span className="text-[var(--border-strong)]">·</span>
+          <span className="text-muted-foreground/40">·</span>
           <span>营业时间感知</span>
-          <span className="text-[var(--border-strong)]">·</span>
+          <span className="text-muted-foreground/40">·</span>
           <span>真实通勤时间</span>
         </div>
       </header>
@@ -98,12 +95,10 @@ export default function HomePage() {
       )}
 
       <section className="panel relative mb-9 space-y-4 overflow-hidden p-6">
-        {/* 卡片顶边一道暖色渐变,给表单一个"入口"的重量 */}
-        <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[var(--accent)] to-transparent opacity-60" />
 
         <h2 className="flex items-center gap-2 text-sm font-semibold">
-          <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-[var(--accent-soft)]">
-            <Plus className="h-3.5 w-3.5 text-[var(--accent)]" />
+          <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-secondary">
+            <Plus className="h-3.5 w-3.5 text-foreground" />
           </span>
           新建行程
         </h2>
@@ -117,8 +112,8 @@ export default function HomePage() {
                 onClick={() => setCity(c)}
                 className={`rounded-full border px-3 py-1 text-xs transition-all ${
                   city === c
-                    ? 'border-[var(--accent)] bg-[var(--accent-soft)] font-medium text-[var(--accent)]'
-                    : 'border-[var(--border)] text-[var(--muted)] hover:border-[var(--border-strong)] hover:text-[var(--text)]'
+                    ? 'border-foreground bg-secondary font-medium text-foreground'
+                    : 'border-border text-muted-foreground hover:border-input hover:text-foreground'
                 }`}
               >
                 {c}
@@ -188,25 +183,25 @@ export default function HomePage() {
           </div>
         </div>
 
-        <p className="text-xs text-[var(--muted)]">
+        <p className="text-xs text-muted-foreground">
           不填日期也能规划，系统会按景点数量估算天数（约每天 3 个点）。
         </p>
 
-        <button className="btn-primary" onClick={create} disabled={creating}>
+        <Button onClick={create} disabled={creating}>
           {creating ? '创建中…' : '开始规划'}
-        </button>
+        </Button>
       </section>
 
       <section>
         <h2 className="mb-3 flex items-baseline gap-2 text-sm font-semibold">
           我的行程
           {trips && trips.length > 0 && (
-            <span className="text-xs font-normal text-[var(--faint)]">{trips.length}</span>
+            <span className="text-xs font-normal text-muted-foreground">{trips.length}</span>
           )}
         </h2>
         {trips === null ? (
           <div className="flex justify-center py-8">
-            <Spinner className="text-[var(--muted)]" />
+            <Spinner className="text-muted-foreground" />
           </div>
         ) : trips.length === 0 ? (
           // 加载失败时不能说"用上面的表单创建" —— 创建也会失败，
@@ -219,20 +214,20 @@ export default function HomePage() {
                 <button
                   onClick={() => router.push(`/trips/${t.id}`)}
                   className="panel group flex w-full items-center gap-3.5 p-3.5 text-left transition-all
-                    hover:border-[var(--border-strong)] hover:bg-[var(--raised)]"
+                    hover:border-input hover:bg-secondary"
                 >
                   {/* 城市首字做视觉锚点,列表长了也能快速扫 */}
                   <span
-                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl
-                      border border-[var(--border)] bg-[var(--raised)] text-base font-medium
-                      text-[var(--accent)] transition-colors group-hover:border-[var(--accent)]/40"
+                    className="flex h-10 w-10 shrink-0 items-center justify-center rounded-md
+                      border border-border bg-secondary text-base font-medium
+                      text-foreground transition-colors"
                   >
                     {t.city.slice(0, 1)}
                   </span>
 
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-medium">{t.title}</p>
-                    <p className="mt-1 flex items-center gap-1 text-xs text-[var(--muted)]">
+                    <p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
                       <MapPin className="h-3 w-3 shrink-0" />
                       {t.city}
                       {t.startDate && ` · ${t.startDate}`}
@@ -240,14 +235,11 @@ export default function HomePage() {
                     </p>
                   </div>
 
-                  <span
-                    className={`chip shrink-0 ${
-                      t.status === 'planned' ? 'chip-active' : ''
-                    }`}
-                  >
+                  {/* 状态用 secondary 而不是实心 primary —— 徽章比标题还抢眼就本末倒置了 */}
+                  <Badge variant="secondary" className="shrink-0 font-normal">
                     {STATUS_LABEL[t.status] ?? t.status}
-                  </span>
-                  <ChevronRight className="h-4 w-4 shrink-0 text-[var(--faint)] transition-transform group-hover:translate-x-0.5 group-hover:text-[var(--accent)]" />
+                  </Badge>
+                  <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 group-hover:text-foreground" />
                 </button>
               </li>
             ))}

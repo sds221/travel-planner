@@ -14,16 +14,39 @@ export function ok<T>(data: T, init?: number) {
 }
 
 /**
+ * 序列化之前的形状。
+ *
+ * 契约(@/types/api)描述的是**前端收到的 JSON**,而路由手里拿的是序列化
+ * 之前的值 —— 差别主要在 Date:数据库返回 `Date`,`JSON.stringify` 会把它
+ * 变成 ISO 字符串,所以契约里写的是 `string`。
+ *
+ * 如果直接拿契约类型去卡路由的返回值,`Date` vs `string` 会报一堆假错,
+ * 逼着人在路由里到处写 `.toISOString()`(纯样板)或者干脆放弃类型检查。
+ * 这个类型把"JSON 化"这层语义补上:契约要 string 的位置,路由给 Date
+ * 或 string 都算对。
+ *
+ * 只放宽 Date,不放宽别的 —— 漏字段、类型写错这些真问题照样拦住。
+ */
+type BeforeJson<T> = T extends string
+  ? T | Date
+  : T extends (infer E)[]
+    ? BeforeJson<E>[]
+    : T extends object
+      ? { [K in keyof T]: BeforeJson<T[K]> }
+      : T
+
+/**
  * 按契约返回,让后端也受 @/types/api 约束。
  *
  * `ok()` 的泛型是自由推导的,后端返回什么结构都不会报错 —— 契约只拦住了
  * 前端。用 `okAs<GetTripData>(...)` 写的话,后端漏字段/类型写错会当场编译
  * 失败,而不是等前端运行时拿到 undefined。
  *
- * 新写的路由建议都用这个;老路由逐步换过来。
+ * 实测:后端漏返回 city 时报
+ *   Type '{...}' is missing the following properties from type 'Trip': city, status, ...
  */
-export function okAs<T>(data: T, init?: number) {
-  return ok<T>(data, init)
+export function okAs<T>(data: BeforeJson<T>, init?: number) {
+  return ok(data, init)
 }
 
 export function fail(message: string, status = 400, extra?: Record<string, unknown>) {

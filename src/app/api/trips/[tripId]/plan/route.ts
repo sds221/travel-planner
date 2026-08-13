@@ -1,5 +1,6 @@
 import { z } from 'zod'
-import { ok, fail, failFromError, parseBody } from '@/lib/api'
+import { okAs, fail, failFromError, parseBody } from '@/lib/api'
+import type { GeneratePlanData, GetPlanData } from '@/types/api'
 import {
   getTrip,
   listTripPois,
@@ -135,7 +136,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ tripId:
       .map((id) => tripPois.find((p) => p.poiId === id)?.poi.name)
       .filter((n): n is string => !!n)
 
-    return ok({
+    return okAs<GeneratePlanData>({
       runId: agentResult?.runId ?? null,
       attempts: agentResult?.attempts ?? 0,
       summary:
@@ -166,7 +167,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ tripId:
   try {
     const trip = await getTrip(tripId)
     if (!trip) return fail('行程不存在', 404)
-    return ok({ trip, itinerary: await getItinerary(tripId) })
+    return okAs<GetPlanData>({ trip, itinerary: await getItinerary(tripId) })
   } catch (err) {
     return failFromError(err)
   }

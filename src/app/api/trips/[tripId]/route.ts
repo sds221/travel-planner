@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { ok, fail, failFromError, parseBody } from '@/lib/api'
+import { okAs, fail, failFromError, parseBody } from '@/lib/api'
 import {
   getTrip,
   updateTrip,
@@ -9,6 +9,7 @@ import {
   markStale,
 } from '@/lib/db/trips'
 import { getPoisByIds } from '@/lib/db/queries'
+import type { GetTripData, UpdateTripData } from '@/types/api'
 
 /** 行程全貌：一次拿到三个步骤的状态，前端不用打三个请求 */
 export async function GET(_req: Request, { params }: { params: Promise<{ tripId: string }> }) {
@@ -20,7 +21,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ tripId:
     const [tripPois, itinerary] = await Promise.all([listTripPois(tripId), getItinerary(tripId)])
     const hotel = trip.hotelPoiId ? (await getPoisByIds([trip.hotelPoiId]))[0] ?? null : null
 
-    return ok({
+    return okAs<GetTripData>({
       trip,
       days: tripDayCount(trip, tripPois.length),
       pois: tripPois,
@@ -65,11 +66,18 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ tripId
       body.data.dayEndTime !== undefined
 
     const updated = await updateTrip(tripId, body.data)
+    // updateTrip/getTrip 都可能返回 null（行程被删了、或 id 不存在）。
+    // 之前直接把 null 当成功返回，前端按 Trip 类型读字段就会炸在
+    // "cannot read property of null" —— 契约检查把这条漏网的路径揪出来了。
+    if (!updated) return fail('行程不存在', 404)
+
     if (invalidates) {
       await markStale(tripId)
-      return ok(await getTrip(tripId))
+      const refreshed = await getTrip(tripId)
+      if (!refreshed) return fail('行程不存在', 404)
+      return okAs<UpdateTripData>(refreshed)
     }
-    return ok(updated)
+    return okAs<UpdateTripData>(updated)
   } catch (err) {
     return failFromError(err)
   }

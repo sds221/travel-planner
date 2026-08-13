@@ -132,7 +132,10 @@ PostGIS 是生产环境的首选，不是装饰：酒店的"位置合适"查询�
 
 - **路径不要在业务代码里拼字符串**,走 `API_ROUTES.xxx(tripId)`。后端换挂载点(比如加 `/v1` 前缀)只改这一个对象
 - **响应统一包一层** `{ ok: true, data }` / `{ ok: false, error, kind? }`。前端 [client.ts](src/lib/client.ts) 负责拆包,业务代码拿到的直接是 `data`
-- **后端返回值用 `okAs<T>()` 而不是 `ok()`**。`ok()` 的泛型是自由推导的,漏字段不报错;`okAs<GetTripData>()` 会在编译期拦住。实测:后端漏返回 `city` 时报 `Type '{...}' is missing the following properties from type 'Trip': city, status, ...`
+- **后端返回值用 `okAs<T>()` 而不是 `ok()`**。`ok()` 的泛型是自由推导的,漏字段不报错;`okAs<GetTripData>()` 会在编译期拦住。实测:后端漏返回 `city` 时报 `Type '{...}' is missing the following properties from type 'Trip': city, status, ...`。16 个返回点已全部转成 `okAs`
+- `okAs` 的参数类型是 `BeforeJson<T>`(见 [api.ts](src/lib/api.ts))。契约描述的是**前端收到的 JSON**,而路由手里是序列化之前的值 —— 差别主要在 `Date`:数据库给 `Date`,`JSON.stringify` 变成 ISO 字符串,所以契约写 `string`。`BeforeJson` 只在 `string` 位置额外允许 `Date`,漏字段和类型写错照样拦住
+
+写读取用的类型时**别复用写入类型**。`ItemInput` 那种 `poiId?: string | null` 的可选是为了让调用方少写 null,但读出来的行每列都在。混用会让契约对不上:`undefined` 的键被 `JSON.stringify` 整个省掉,前端读到 `undefined`,而契约声明的是 `null`。
 - **鉴权只有一个注入点**:`client.ts` 里的 `buildHeaders()`。要带 token 改这一个函数,13 个接口全都带上
 - `ApiError` 带了 `status`,鉴权接入后 UI 能区分 401 和其它错误
 

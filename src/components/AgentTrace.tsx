@@ -44,21 +44,21 @@ export function AgentTrace({ tripId }: { tripId: string }) {
         onClick={toggle}
       >
         <span className="flex items-center gap-2 text-sm font-semibold">
-          <Terminal className="h-4 w-4 text-[var(--muted)]" />
+          <Terminal className="h-4 w-4 text-muted-foreground" />
           AI 推理过程
         </span>
-        <span className="flex items-center gap-2 text-xs text-[var(--muted)]">
+        <span className="flex items-center gap-2 text-xs text-muted-foreground">
           {open ? '收起' : '展开'}
           {open ? <ChevronDown className="h-3.5 w-3.5" /> : <ChevronRight className="h-3.5 w-3.5" />}
         </span>
       </button>
 
       {open && (
-        <div className="space-y-3 border-t border-[var(--border)] p-4">
+        <div className="space-y-3 border-t border-border p-4">
           {error && <ErrorBox message={error} />}
           {runs === null && !error && (
             <div className="flex justify-center py-4">
-              <Spinner className="text-[var(--muted)]" />
+              <Spinner className="text-muted-foreground" />
             </div>
           )}
           {runs?.length === 0 && <Empty>还没有 AI 调用记录。</Empty>}
@@ -66,7 +66,7 @@ export function AgentTrace({ tripId }: { tripId: string }) {
           {runs?.map((run) => {
             const isOpen = expanded.has(run.id)
             return (
-              <div key={run.id} className="rounded-lg border border-[var(--border)]">
+              <div key={run.id} className="rounded-lg border border-border">
                 <button
                   className="flex w-full items-start justify-between gap-3 p-3 text-left"
                   onClick={() => {
@@ -91,7 +91,7 @@ export function AgentTrace({ tripId }: { tripId: string }) {
                         {run.status === 'succeeded' ? '成功' : run.status === 'failed' ? '失败' : '进行中'}
                       </span>
                     </p>
-                    <p className="mt-0.5 text-[11px] text-[var(--muted)]">
+                    <p className="mt-0.5 text-[11px] text-muted-foreground">
                       {run.steps.length} 步
                       {run.durationMs !== null && ` · ${(run.durationMs / 1000).toFixed(1)}s`}
                       {run.model && ` · ${run.model}`}
@@ -103,37 +103,37 @@ export function AgentTrace({ tripId }: { tripId: string }) {
                     )}
                   </div>
                   {isOpen ? (
-                    <ChevronDown className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[var(--muted)]" />
+                    <ChevronDown className="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted-foreground" />
                   ) : (
-                    <ChevronRight className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[var(--muted)]" />
+                    <ChevronRight className="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted-foreground" />
                   )}
                 </button>
 
                 {isOpen && (
-                  <div className="space-y-2 border-t border-[var(--border)] p-3">
+                  <div className="space-y-2 border-t border-border p-3">
                     {run.userMessage && (
-                      <p className="text-[11px] text-[var(--muted)]">
+                      <p className="text-[11px] text-muted-foreground">
                         用户输入：{run.userMessage}
                       </p>
                     )}
                     {run.steps.length === 0 && (
-                      <p className="text-[11px] text-[var(--muted)]">没有记录到步骤。</p>
+                      <p className="text-[11px] text-muted-foreground">没有记录到步骤。</p>
                     )}
                     {run.steps.map((step) => (
-                      <div key={step.index} className="rounded border border-[var(--border)] p-2">
+                      <div key={step.index} className="rounded border border-border p-2">
                         {step.type === 'text' ? (
                           <p className="whitespace-pre-wrap text-[11px] leading-relaxed">
                             {step.text}
                           </p>
                         ) : (
                           <>
-                            <p className="font-mono text-[11px] text-[var(--accent)]">
+                            <p className="font-mono text-[11px] text-foreground">
                               {step.toolName}()
                             </p>
-                            <pre className="mt-1 max-h-32 overflow-auto whitespace-pre-wrap break-all text-[10px] text-[var(--muted)]">
+                            <pre className="mt-1 max-h-32 overflow-auto whitespace-pre-wrap break-all text-[10px] text-muted-foreground">
                               入参 {JSON.stringify(step.input)}
                             </pre>
-                            <pre className="mt-1 max-h-40 overflow-auto whitespace-pre-wrap break-all text-[10px] text-[var(--muted)]">
+                            <pre className="mt-1 max-h-40 overflow-auto whitespace-pre-wrap break-all text-[10px] text-muted-foreground">
                               返回 {JSON.stringify(step.output)}
                             </pre>
                           </>

@@ -85,7 +85,7 @@ export function StepHotel() {
       {error && <ErrorBox message={error} />}
 
       <button
-        className="flex items-center gap-1.5 text-xs text-[var(--muted)] hover:text-[var(--text)]"
+        className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground"
         onClick={() => setStep(0)}
       >
         <ArrowLeft className="h-3.5 w-3.5" />
@@ -100,9 +100,9 @@ export function StepHotel() {
             <section className="panel p-4">
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <p className="text-xs text-[var(--muted)]">已选酒店</p>
+                  <p className="text-xs text-muted-foreground">已选酒店</p>
                   <p className="mt-1 text-sm font-medium">{hotel.name}</p>
-                  <p className="mt-0.5 flex flex-wrap items-center gap-1.5 text-xs text-[var(--muted)]">
+                  <p className="mt-0.5 flex flex-wrap items-center gap-1.5 text-xs text-muted-foreground">
                     <span>{hotel.address ?? hotel.district ?? ''}</span>
                     {hotel.priceMinCents !== null && (
                       <>
@@ -124,9 +124,9 @@ export function StepHotel() {
 
           <section className="panel space-y-4 p-4">
             <h3 className="flex items-center gap-2 text-sm font-semibold">
-              <Hotel className="h-4 w-4 text-[var(--accent)]" />
+              <Hotel className="h-4 w-4 text-foreground" />
               按预算和偏好推荐
-              <span className="text-xs font-normal text-[var(--muted)]">
+              <span className="text-xs font-normal text-muted-foreground">
                 基于已选的 {pois.length} 个景点
               </span>
             </h3>
@@ -150,13 +150,13 @@ export function StepHotel() {
                 <span className="label">预算口径</span>
                 <div className="flex gap-2">
                   <button
-                    className={`btn flex-1 border ${perNight ? 'border-[var(--accent)] bg-[var(--accent)]/10' : 'border-[var(--border)]'}`}
+                    className={`btn flex-1 border ${perNight ? 'border-foreground bg-primary/10' : 'border-border'}`}
                     onClick={() => setPerNight(true)}
                   >
                     每晚
                   </button>
                   <button
-                    className={`btn flex-1 border ${!perNight ? 'border-[var(--accent)] bg-[var(--accent)]/10' : 'border-[var(--border)]'}`}
+                    className={`btn flex-1 border ${!perNight ? 'border-foreground bg-primary/10' : 'border-border'}`}
                     onClick={() => setPerNight(false)}
                   >
                     总价
@@ -170,7 +170,7 @@ export function StepHotel() {
               <div className="space-y-2">
                 {BRAND_GROUPS.map((group) => (
                   <div key={group.tier} className="flex flex-wrap items-center gap-1.5">
-                    <span className="w-14 shrink-0 text-xs text-[var(--muted)]">{group.tier}</span>
+                    <span className="w-14 shrink-0 text-xs text-muted-foreground">{group.tier}</span>
                     {group.brands.map((b) => {
                       const on = brands.has(b)
                       return (
@@ -184,8 +184,8 @@ export function StepHotel() {
                           }}
                           className={`rounded-full border px-2.5 py-1 text-xs transition-colors ${
                             on
-                              ? 'border-[var(--accent)] bg-[var(--accent)]/15 text-[var(--text)]'
-                              : 'border-[var(--border)] text-[var(--muted)] hover:bg-white/5'
+                              ? 'border-foreground bg-primary/15 text-foreground'
+                              : 'border-border text-muted-foreground hover:bg-white/5'
                           }`}
                         >
                           {b}
@@ -247,7 +247,7 @@ export function StepHotel() {
                     return (
                       <li
                         key={h.poiId}
-                        className={`panel p-3 ${chosen ? 'border-[var(--accent)]' : ''}`}
+                        className={`panel p-3 ${chosen ? 'border-foreground' : ''}`}
                       >
                         <div className="flex items-start justify-between gap-3">
                           <div className="min-w-0 space-y-1">
@@ -256,11 +256,11 @@ export function StepHotel() {
                               {h.starRating && <span className="chip ml-2">{h.starRating} 星</span>}
                               {h.brand && <span className="chip ml-1">{h.brand}</span>}
                             </p>
-                            <p className="text-xs leading-relaxed text-[var(--muted)]">{h.reason}</p>
-                            <p className="text-xs text-[var(--muted)]">{h.commuteNote}</p>
+                            <p className="text-xs leading-relaxed text-muted-foreground">{h.reason}</p>
+                            <p className="text-xs text-muted-foreground">{h.commuteNote}</p>
                             <p className="flex flex-wrap items-center gap-1.5 text-xs">
                               {h.nightlyCents !== null ? (
-                                <span className="text-[var(--text)]">
+                                <span className="text-foreground">
                                   {/* 联网查到的价格说"约"是恰当的谨慎，
                                       粗估的说"约"反而显得比实际更确定 */}
                                   {h.priceSource === 'search' || h.priceSource === 'ota'
@@ -268,18 +268,18 @@ export function StepHotel() {
                                     : `约 ${yuan(h.nightlyCents)}/晚`}
                                 </span>
                               ) : (
-                                <span className="text-[var(--muted)]">未获取到价格</span>
+                                <span className="text-muted-foreground">未获取到价格</span>
                               )}
                               <PriceSourceBadge source={h.priceSource} />
                               {h.priceCitations && <PriceCitations citations={h.priceCitations} />}
                               {h.priceMinCents !== null && (
-                                <span className="text-[var(--muted)]">
+                                <span className="text-muted-foreground">
                                   区间 {priceRange(h.priceMinCents, h.priceMaxCents)}
                                 </span>
                               )}
                             </p>
                             {h.address && (
-                              <p className="truncate text-xs text-[var(--muted)]">{h.address}</p>
+                              <p className="truncate text-xs text-muted-foreground">{h.address}</p>
                             )}
                           </div>
                           <button
@@ -307,9 +307,9 @@ export function StepHotel() {
           )}
 
           <section className="panel p-4">
-            <p className="text-xs text-[var(--muted)]">
+            <p className="text-xs text-muted-foreground">
               不想住酒店或已有住处？可以
-              <button className="mx-1 text-[var(--accent)] underline" onClick={() => setStep(2)}>
+              <button className="mx-1 text-foreground underline" onClick={() => setStep(2)}>
                 跳过这步
               </button>
               直接生成路线，届时行程不会固定起终点。

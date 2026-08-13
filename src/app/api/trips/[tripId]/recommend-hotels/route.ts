@@ -1,5 +1,6 @@
 import { z } from 'zod'
-import { ok, fail, failFromError, parseBody } from '@/lib/api'
+import { okAs, fail, failFromError, parseBody } from '@/lib/api'
+import type { RecommendHotelsData } from '@/types/api'
 import { getTrip, listTripPois, tripDayCount, centroidOf, updateTrip } from '@/lib/db/trips'
 import { recommendHotels } from '@/lib/agent/tasks/recommend-hotels'
 import { getPoisByIds } from '@/lib/db/queries'
@@ -65,7 +66,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ tripId:
     const byId = new Map(real.map((p) => [p.id, p]))
     const valid = result.output.recommendations.filter((r) => byId.has(r.poiId))
 
-    return ok({
+    return okAs<RecommendHotelsData>({
       runId: result.runId,
       summary: result.output.summary,
       budgetVerdict: result.output.budgetVerdict,

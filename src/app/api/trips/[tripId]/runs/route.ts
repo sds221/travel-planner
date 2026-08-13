@@ -1,12 +1,13 @@
-import { ok, failFromError } from '@/lib/api'
+import { okAs, failFromError } from '@/lib/api'
 import { listRuns } from '@/lib/db/agent-runs'
+import type { GetRunsData } from '@/types/api'
 
 /** ReAct 轨迹查询。UI 上的"查看推理过程"和排查问题都用这个。 */
 export async function GET(_req: Request, { params }: { params: Promise<{ tripId: string }> }) {
   const { tripId } = await params
   try {
     const runs = await listRuns(tripId)
-    return ok(
+    return okAs<GetRunsData>(
       runs.map((r) => ({
         id: r.id,
         task: r.task,

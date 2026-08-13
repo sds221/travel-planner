@@ -1,5 +1,6 @@
 import { z } from 'zod'
-import { ok, fail, failFromError, parseBody } from '@/lib/api'
+import { okAs, fail, failFromError, parseBody } from '@/lib/api'
+import type { ImportPlacesData } from '@/types/api'
 import { getTrip, addTripPois, listTripPois, updateTrip } from '@/lib/db/trips'
 import { upsertPois, upsertUserPoi, searchPoisByName } from '@/lib/db/queries'
 import { getMapProvider } from '@/lib/providers'
@@ -107,7 +108,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ tripId:
       }
     }
 
-    return ok({
+    return okAs<ImportPlacesData>({
       imported: resolved.length,
       // 匹配到的名字和用户写的不一样时要显式告知，"迪士尼"可能匹配成"迪士尼小镇"
       resolved: resolved.map((r) => ({

@@ -14,10 +14,10 @@ export function Spinner({ className }: { className?: string }) {
 export function AgentPending({ label, hint }: { label: string; hint?: string }) {
   return (
     <div className="panel flex items-start gap-3 p-4">
-      <Spinner className="mt-0.5 text-[var(--accent)]" />
+      <Spinner className="mt-0.5 text-foreground" />
       <div className="space-y-1">
         <p className="text-sm">{label}</p>
-        <p className="text-xs text-[var(--muted)]">
+        <p className="text-xs text-muted-foreground">
           {hint ?? '模型正在调用地图数据并推理，通常需要 20-60 秒'}
         </p>
       </div>
@@ -117,16 +117,16 @@ const SETUP_STEPS: Record<string, { cmd?: string; text: string }[]> = {
 
 export function NoteBox({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex items-start gap-2 rounded-lg border border-[var(--border)] bg-white/[0.02] p-3">
-      <Info className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[var(--muted)]" />
-      <div className="text-xs leading-relaxed text-[var(--muted)]">{children}</div>
+    <div className="flex items-start gap-2 rounded-lg border border-border bg-white/[0.02] p-3">
+      <Info className="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+      <div className="text-xs leading-relaxed text-muted-foreground">{children}</div>
     </div>
   )
 }
 
 export function Empty({ children }: { children: React.ReactNode }) {
   return (
-    <p className="rounded-lg border border-dashed border-[var(--border)] px-4 py-6 text-center text-sm text-[var(--muted)]">
+    <p className="rounded-lg border border-dashed border-border px-4 py-6 text-center text-sm text-muted-foreground">
       {children}
     </p>
   )
@@ -185,7 +185,7 @@ export function PriceCitations({ citations }: { citations: { title: string; url:
           href={c.url}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-[10px] text-[var(--accent)] underline decoration-dotted hover:no-underline"
+          className="text-[10px] text-foreground underline decoration-dotted hover:no-underline"
           title={c.title}
         >
           来源

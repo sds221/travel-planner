@@ -18,13 +18,13 @@ declare global {
 }
 
 /**
- * 每天一个颜色。
+ * 每天一条线的颜色。
  *
- * 排在暖色调主题里,所以从琥珀出发,往陶土红/赭石/橄榄这些"土系"走,
- * 而不是用默认的蓝绿撞色 —— 冷色在暖底图上会显得很跳。
- * 相邻两天的色相拉开足够远,叠在地图上不至于分不清。
+ * 主题是 shadcn 的中性灰阶,但地图上不能全用灰 —— 叠在底图上分不清哪天是哪天。
+ * 折中:用 zinc 色阶的明度递进(深→浅),保持极简的观感,同时相邻两天的对比度
+ * 足够。超过 7 天会回到第一个颜色,实际行程很少超过。
  */
-const DAY_COLORS = ['#e8873c', '#c8613f', '#d9a13b', '#a8703f', '#7fa650', '#b5544f', '#8a6a4a']
+const DAY_COLORS = ['#18181b', '#52525b', '#71717a', '#a1a1aa', '#3f3f46', '#d4d4d8', '#27272a']
 
 let loaderPromise: Promise<void> | null = null
 
@@ -135,7 +135,7 @@ export function RouteMap({ days, activeDay, hotel, className }: RouteMapProps) {
             overlays.push(
               new window.AMap.Marker({
                 position: [lng, lat],
-                content: markerHtml('酒', '#f5ece3', '#3a2e25'),
+                content: markerHtml('酒', '#fafafa', '#18181b'),
                 offset: new window.AMap.Pixel(-13, -13),
                 title: item.poi.name,
                 zIndex: 120,
@@ -163,7 +163,7 @@ export function RouteMap({ days, activeDay, hotel, className }: RouteMapProps) {
       overlays.push(
         new window.AMap.Marker({
           position: [hotel.location.lng, hotel.location.lat],
-          content: markerHtml('酒', '#f5ece3', '#3a2e25'),
+          content: markerHtml('酒', '#fafafa', '#18181b'),
           offset: new window.AMap.Pixel(-13, -13),
           title: hotel.name,
         }),
@@ -183,7 +183,7 @@ export function RouteMap({ days, activeDay, hotel, className }: RouteMapProps) {
   if (error) {
     return (
       <div
-        className={`flex items-center justify-center rounded-xl border border-[var(--border)] bg-[#1b1512] p-6 text-center text-xs text-[var(--muted)] ${className ?? ''}`}
+        className={`flex items-center justify-center rounded-xl border border-border bg-muted p-6 text-center text-xs text-muted-foreground ${className ?? ''}`}
       >
         {error}
         <br />
