@@ -20,11 +20,17 @@ declare global {
 /**
  * 每天一条线的颜色。
  *
- * 主题是 shadcn 的中性灰阶,但地图上不能全用灰 —— 叠在底图上分不清哪天是哪天。
- * 折中:用 zinc 色阶的明度递进(深→浅),保持极简的观感,同时相邻两天的对比度
- * 足够。超过 7 天会回到第一个颜色,实际行程很少超过。
+ * 地图配色不跟 UI 主题走 —— 换主题色就改地图会让线路时而看不清。这里用导航
+ * 软件常见的那套高饱和色相环(蓝/橙/绿/紫/红/青/棕):
+ *
+ * - 高德底图是浅灰白配米色道路,深一档的饱和色压在上面才看得清
+ * - 相邻两天必须换色相而不是换明度 —— 折线只有 4px 宽,靠明暗区分在
+ *   彩色底图上根本认不出来
+ * - 蓝色排第一:单天行程最常见,而蓝色是地图上默认的"路线"语义
+ *
+ * 超过 7 天会回到第一个颜色,实际行程很少超过。
  */
-const DAY_COLORS = ['#18181b', '#52525b', '#71717a', '#a1a1aa', '#3f3f46', '#d4d4d8', '#27272a']
+const DAY_COLORS = ['#1a73e8', '#f9a825', '#0f9d58', '#7b1fa2', '#d93025', '#00838f', '#6d4c41']
 
 let loaderPromise: Promise<void> | null = null
 
@@ -117,8 +123,9 @@ export function RouteMap({ days, activeDay, hotel, className }: RouteMapProps) {
             new window.AMap.Polyline({
               path: item.legPolyline,
               strokeColor: color,
-              strokeWeight: 4,
-              strokeOpacity: 0.75,
+              strokeWeight: 5,
+              // 0.75 会让线和底图道路混在一起，0.9 才像导航软件里那条"主路线"
+              strokeOpacity: 0.9,
             }),
           )
           bounds.push(...item.legPolyline)
@@ -135,7 +142,7 @@ export function RouteMap({ days, activeDay, hotel, className }: RouteMapProps) {
             overlays.push(
               new window.AMap.Marker({
                 position: [lng, lat],
-                content: markerHtml('酒', '#fafafa', '#18181b'),
+                content: markerHtml('酒', '#ffffff', '#37474f'),
                 offset: new window.AMap.Pixel(-13, -13),
                 title: item.poi.name,
                 zIndex: 120,
@@ -163,7 +170,7 @@ export function RouteMap({ days, activeDay, hotel, className }: RouteMapProps) {
       overlays.push(
         new window.AMap.Marker({
           position: [hotel.location.lng, hotel.location.lat],
-          content: markerHtml('酒', '#fafafa', '#18181b'),
+          content: markerHtml('酒', '#ffffff', '#37474f'),
           offset: new window.AMap.Pixel(-13, -13),
           title: hotel.name,
         }),
@@ -195,8 +202,15 @@ export function RouteMap({ days, activeDay, hotel, className }: RouteMapProps) {
   return <div ref={containerRef} className={className} />
 }
 
+/**
+ * 标记点。
+ *
+ * 白描边和阴影都是为了在彩色底图上"浮起来":
+ * 之前描边是半透明白(.55)、阴影是 rgba(0,0,0,.5) —— 那套是给深色底调的,
+ * 压在高德的浅色底图上会发灰、糊成一团。现在描边给实心白,阴影压到 .25。
+ */
 function markerHtml(label: string, fg: string, bg: string): string {
   return `<div style="width:26px;height:26px;border-radius:50%;background:${bg};color:${fg};
     display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;
-    border:2px solid rgba(255,255,255,.55);box-shadow:0 2px 8px rgba(0,0,0,.5)">${label}</div>`
+    border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.25)">${label}</div>`
 }
