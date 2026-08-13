@@ -1,0 +1,41 @@
+services:
+  db:
+    image: postgis/postgis:17-3.5
+    container_name: travel-planner-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: travel
+      POSTGRES_PASSWORD: travel
+      POSTGRES_DB: travel_planner
+      # 中文排序与地理计算无关，但对酒店/景点名称排序有影响
+      POSTGRES_INITDB_ARGS: '--encoding=UTF8'
+    ports:
+      - '5433:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U travel -d travel_planner']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: travel-planner-redis
+    restart: unless-stopped
+    # 距离矩阵缓存丢了可以重算，不需要持久化，但保留 AOF 省掉冷启动的 n² 调用
+    command: redis-server --appendonly yes
+    ports:
+      - '6380:6379'
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  pgdata:
+  redisdata:

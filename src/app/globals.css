@@ -1,0 +1,103 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/**
+ * 暖色调深色主题。
+ *
+ * 底色不用中性灰,而是带一点红棕的暖黑(#17120f 系)。旅行产品的气质
+ * 偏"日落/土墙/木头",冷蓝会显得像监控面板。
+ *
+ * 主色用琥珀橙 #e8873c —— 在暖底上够跳,又不像纯橙那样刺眼。
+ * 辅助色用陶土红,只在强调处出现。
+ */
+:root {
+  /* 层次:bg 最深,panel 抬一层,raised 再抬一层 */
+  --bg: #17120f;
+  --panel: #211a15;
+  --raised: #2b221b;
+  --border: #3a2e25;
+  --border-strong: #4a3a2d;
+
+  --text: #f5ece3;
+  --muted: #b09a86;
+  --faint: #7d6b5c;
+
+  --accent: #e8873c;
+  --accent-hover: #f19952;
+  --accent-soft: rgba(232, 135, 60, 0.14);
+  --accent-ring: rgba(232, 135, 60, 0.35);
+
+  --terra: #c8613f;
+  --success: #7fa650;
+  --warn: #d9a13b;
+  --danger: #c9553f;
+}
+
+html,
+body {
+  background: var(--bg);
+  color: var(--text);
+}
+
+body {
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei',
+    system-ui, sans-serif;
+  /* 顶部一层极淡的暖光,避免大面积纯色显得平 */
+  background-image: radial-gradient(1200px 500px at 50% -200px, rgba(232, 135, 60, 0.07), transparent);
+  background-repeat: no-repeat;
+}
+
+@layer components {
+  .panel {
+    @apply rounded-2xl border border-[var(--border)] bg-[var(--panel)];
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-medium
+      transition-all duration-150 disabled:cursor-not-allowed disabled:opacity-45;
+  }
+
+  .btn-primary {
+    @apply btn bg-[var(--accent)] text-[#231508] shadow-[0_1px_0_rgba(255,255,255,0.18)_inset]
+      hover:bg-[var(--accent-hover)] active:translate-y-px;
+  }
+
+  .btn-ghost {
+    @apply btn border border-[var(--border)] text-[var(--text)]
+      hover:border-[var(--border-strong)] hover:bg-white/[0.04] active:translate-y-px;
+  }
+
+  .input {
+    @apply w-full rounded-xl border border-[var(--border)] bg-[#1b1512] px-3 py-2 text-sm
+      text-[var(--text)] transition-colors placeholder:text-[var(--faint)]
+      focus:border-[var(--accent)] focus:outline-none focus:ring-2 focus:ring-[var(--accent-ring)];
+  }
+
+  .label {
+    @apply mb-1.5 block text-xs font-medium tracking-wide text-[var(--muted)];
+  }
+
+  .chip {
+    @apply inline-flex items-center gap-1 rounded-full border border-[var(--border)]
+      px-2.5 py-0.5 text-xs text-[var(--muted)];
+  }
+
+  /* 选中态的 chip:暖色描边 + 淡填充,比纯反白柔和 */
+  .chip-active {
+    @apply border-[var(--accent)] bg-[var(--accent-soft)] text-[var(--accent)];
+  }
+}
+
+/* 日期选择器在深色下默认是白底,反色让它跟着主题 */
+input[type='date']::-webkit-calendar-picker-indicator {
+  filter: invert(0.75) sepia(0.4) saturate(2) hue-rotate(340deg);
+  cursor: pointer;
+}
+
+/* 高德地图容器里的 logo/版权按 API 许可要求保留，只压一下视觉重量 */
+.amap-logo,
+.amap-copyright {
+  opacity: 0.5;
+}

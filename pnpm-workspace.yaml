@@ -1,0 +1,9 @@
+allowBuilds:
+  esbuild: true
+  sharp: true
+minimumReleaseAgeExclude:
+  - '@ai-sdk/gateway@2.0.131'
+  - '@ai-sdk/openai-compatible@1.0.48'
+  - '@ai-sdk/provider-utils@3.0.32'
+  - '@ai-sdk/react@2.0.236'
+  - ai@5.0.233
