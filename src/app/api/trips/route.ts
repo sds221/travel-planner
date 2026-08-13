@@ -1,7 +1,8 @@
 import { z } from 'zod'
-import { ok, failFromError, parseBody } from '@/lib/api'
+import { okAs, failFromError, parseBody } from '@/lib/api'
 import { createTrip, listTrips, ensureDemoUser } from '@/lib/db/trips'
 import { normalizeCity } from '@/lib/city'
+import type { ListTripsData, CreateTripData } from '@/types/api'
 
 const createSchema = z.object({
   title: z.string().min(1).max(80),
@@ -20,7 +21,7 @@ const createSchema = z.object({
 export async function GET() {
   try {
     const userId = await ensureDemoUser()
-    return ok(await listTrips(userId))
+    return okAs<ListTripsData>(await listTrips(userId))
   } catch (err) {
     return failFromError(err)
   }
@@ -32,7 +33,7 @@ export async function POST(req: Request) {
   try {
     const userId = await ensureDemoUser()
     const trip = await createTrip({ userId, ...body.data })
-    return ok(trip, 201)
+    return okAs<CreateTripData>(trip, 201)
   } catch (err) {
     return failFromError(err)
   }

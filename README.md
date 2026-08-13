@@ -118,6 +118,26 @@ PostGIS 是生产环境的首选，不是装饰：酒店的"位置合适"查询�
 
 迁移文件开头手动加了两行 `CREATE EXTENSION` —— `docker/init` 只在数据卷首次创建时执行，对已有库或托管 Postgres 不生效。**重新生成迁移后要把这两行加回来。**
 
+## 接口契约
+
+前后端的约定集中在 [src/types/api.ts](src/types/api.ts) 一个文件里:路径、请求体、响应体各声明一次,两边都 import 它。
+
+改接口时的顺序:
+
+1. 改 `src/types/api.ts` 里对应的类型
+2. `pnpm typecheck` —— 前端和后端两侧会同时报错,报错点就是要改的地方
+3. 改完再跑一次,干净了说明两边对上了
+
+几条约定:
+
+- **路径不要在业务代码里拼字符串**,走 `API_ROUTES.xxx(tripId)`。后端换挂载点(比如加 `/v1` 前缀)只改这一个对象
+- **响应统一包一层** `{ ok: true, data }` / `{ ok: false, error, kind? }`。前端 [client.ts](src/lib/client.ts) 负责拆包,业务代码拿到的直接是 `data`
+- **后端返回值用 `okAs<T>()` 而不是 `ok()`**。`ok()` 的泛型是自由推导的,漏字段不报错;`okAs<GetTripData>()` 会在编译期拦住。实测:后端漏返回 `city` 时报 `Type '{...}' is missing the following properties from type 'Trip': city, status, ...`
+- **鉴权只有一个注入点**:`client.ts` 里的 `buildHeaders()`。要带 token 改这一个函数,13 个接口全都带上
+- `ApiError` 带了 `status`,鉴权接入后 UI 能区分 401 和其它错误
+
+`kind` 字段用来区分"程序出错"和"环境没配好" —— 后者 UI 显示的是配置步骤而不是红色报错框。新增 kind 记得同步 `SETUP_KINDS`。
+
 ## 测试
 
 ```bash

@@ -13,6 +13,19 @@ export function ok<T>(data: T, init?: number) {
   return NextResponse.json({ ok: true as const, data }, { status: init ?? 200 })
 }
 
+/**
+ * 按契约返回,让后端也受 @/types/api 约束。
+ *
+ * `ok()` 的泛型是自由推导的,后端返回什么结构都不会报错 —— 契约只拦住了
+ * 前端。用 `okAs<GetTripData>(...)` 写的话,后端漏字段/类型写错会当场编译
+ * 失败,而不是等前端运行时拿到 undefined。
+ *
+ * 新写的路由建议都用这个;老路由逐步换过来。
+ */
+export function okAs<T>(data: T, init?: number) {
+  return ok<T>(data, init)
+}
+
 export function fail(message: string, status = 400, extra?: Record<string, unknown>) {
   return NextResponse.json({ ok: false as const, error: message, ...extra }, { status })
 }
